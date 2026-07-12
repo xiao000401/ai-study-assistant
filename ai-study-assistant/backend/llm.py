@@ -14,9 +14,9 @@ client=ZhipuAI(api_key=API_KEY)
 #定义核心函数
 def ask_ai(question):
     """发送问题给AI,返回回答"""
-    response client.chat.completions.create(
+    response =client.chat.completions.create(
         model="glm-4-flash",
-        message=[
+        messages=[
             {"role":"user","content":question}
         ],  
     )
