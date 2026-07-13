@@ -17,9 +17,19 @@ def ask_ai(question):
     """发送问题给AI，返回回答"""
     response =client.chat.completions.create(
         model="glm-4-flash",
-        messages=[
+        message=[
             {"role":"user","content":question}
         ],
+    )
+    return response.choices[0].message.content
+
+def ask_ai_with_history(messages):
+    """
+    支持多轮对话的AI调用
+    messages:完整的对话历史列表"""
+    response=client.chat.completions.create(
+        model="glm-4-flash",
+        messages=messages,
     )
     return response.choices[0].message.content
 #入口测试

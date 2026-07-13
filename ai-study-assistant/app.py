@@ -3,15 +3,21 @@ AI学习助手-gradio聊天界面
 """
 #导入工具箱
 import gradio as gr
-from backend.llm import ask_ai
+from backend.llm import ask_ai_with_history
 #定义聊天处理函数
-def chat(messages,history):
+def chat(message,history):
     """
     处理用户消息并返回AI回复
-    messages:用户当前输入的消息（字符串）
+    message:用户当前输入的消息（字符串）
     history:历史对话记录(列表,gradio自动维护)
     """
-    reply=ask_ai(messages)
+    messages=[]
+
+    for user_msg,ai_msg in history:
+        messages.append({"role":"user","content":user_msg})
+        messages.append({"role":"assistant","content":ai_msg})
+    messages.append({"role":"user","content":message})
+    reply=ask_ai_with_history(messages)
 
     return reply
 
