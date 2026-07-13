@@ -13,7 +13,8 @@ def chat(message,history):
     """
     messages=[]
 
-    for user_msg,ai_msg in history:
+    for item in history:
+        user_msg,ai_msg,*rest=item
         messages.append({"role":"user","content":user_msg})
         messages.append({"role":"assistant","content":ai_msg})
     messages.append({"role":"user","content":message})
