@@ -34,22 +34,57 @@ def chat(message, history):
     返回:
         AI 的回复内容（字符串）
     """
+    print(f"当前对话轮数：{len(history)}")
+    
     messages = []
     
     for item in history:
         # 直接用索引，更安全
-        user_msg = item[0]
-        ai_msg = item[1]
-        messages.append({"role": "user", "content": user_msg})
-        messages.append({"role": "assistant", "content": ai_msg})
-    
+        if isinstance(item, dict):
+            role = item.get('role', '')
+            content = item.get('content', [])
+            
+            # 提取文本内容
+            text_content = ""
+            if isinstance(content, list):
+                for c in content:
+                    if isinstance(c, dict) and 'text' in c:
+                        text_content += c['text']
+                    elif isinstance(c, str):
+                        text_content += c
+            elif isinstance(content, str):
+                text_content = content
+            
+            if role == 'user' and text_content:
+                messages.append({"role": "user", "content": text_content})
+            elif role == 'assistant' and text_content:
+                messages.append({"role": "assistant", "content": text_content})
 
-    messages.append({"role": "user", "content": message})
+        
+        elif isinstance(item,(list,tuple)) and len(item)>=2:
+            user_msg = item[0] if item[0] else""
+            ai_msg = item[1] if item[1] else""
+            if user_msg :    
+                messages.append({"role": "user", "content": user_msg})
+            if ai_msg :
+                messages.append({"role": "assistant", "content": ai_msg})
+        else:
+            print(f"跳过未知格式：{item}")
+            continue
     
+    if message and message.strip():
+        messages.append({"role": "user", "content": message})
+    print(f"发送给AI的消息数：{len(message)}")
+
+
     # 4. 调用 AI（传入系统提示词）
-    reply = ask_ai_with_history(messages, system_prompt=SYSTEM_PROMPT)
-    
-    return reply
+    try:
+        reply = ask_ai_with_history(messages, system_prompt=SYSTEM_PROMPT)
+        print (f"AI 回复成功，长度: {len(reply)} 字符")
+        return reply
+    except Exception as e:
+        print(f"AI 调用失败: {e}")
+        return f"出错了：{str(e)}"
 
 
 # 创建聊天界面
